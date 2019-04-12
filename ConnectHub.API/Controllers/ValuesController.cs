@@ -23,6 +23,7 @@ namespace ConnectHub.API.Controllers
         public async Task<IActionResult> GetValues()
         {
             var values = await _dataContext.Values.ToListAsync();
+            
             return Ok(values);
         }
 
