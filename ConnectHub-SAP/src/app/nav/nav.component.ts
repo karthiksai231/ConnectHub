@@ -19,7 +19,7 @@ export class NavComponent implements OnInit {
       next => {
         console.log('Logged In successfully');
       }, error => {
-        console.log('Failed to Login');
+        console.log(error);
       });
   }
 
