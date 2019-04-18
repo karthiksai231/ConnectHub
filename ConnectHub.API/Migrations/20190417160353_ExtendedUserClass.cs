@@ -55,6 +55,11 @@ namespace ConnectHub.API.Migrations
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
+            migrationBuilder.AddColumn<string>(
+                name: "LookingFor",
+                table: "Users",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "Photos",
                 columns: table => new
@@ -123,6 +128,10 @@ namespace ConnectHub.API.Migrations
 
             migrationBuilder.DropColumn(
                 name: "LastActive",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "LookingFor",
                 table: "Users");
         }
     }
