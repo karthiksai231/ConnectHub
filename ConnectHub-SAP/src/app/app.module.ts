@@ -24,6 +24,8 @@ import { FriendCardComponent } from './friends/friend-card/friend-card.component
 import { FriendDetailComponent } from './friends/friend-detail/friend-detail.component';
 import { FriendDetailResolver } from './_resolvers/friend-detail.resolver';
 import { FriendListResolver } from './_resolvers/friend-list.resolver';
+import { FriendEditComponent } from './friends/friend-edit/friend-edit.component';
+import { FriendEditResolver } from './_resolvers/friend-edit.resolver';
 
 export function tokenGetter() {
    return localStorage.getItem('token');
@@ -39,7 +41,8 @@ export function tokenGetter() {
       ListsComponent,
       MessagesComponent,
       FriendCardComponent,
-      FriendDetailComponent
+      FriendDetailComponent,
+      FriendEditComponent
    ],
    imports: [
       BrowserModule,
@@ -64,7 +67,8 @@ export function tokenGetter() {
       AuthGuard,
       UserService,
       FriendDetailResolver,
-      FriendListResolver
+      FriendListResolver,
+      FriendEditResolver
    ],
    bootstrap: [
       AppComponent

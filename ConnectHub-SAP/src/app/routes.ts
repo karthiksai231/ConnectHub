@@ -7,6 +7,8 @@ import { AuthGuard } from './_guards/auth.guard';
 import { FriendDetailComponent } from './friends/friend-detail/friend-detail.component';
 import { FriendDetailResolver } from './_resolvers/friend-detail.resolver';
 import { FriendListResolver } from './_resolvers/friend-list.resolver';
+import { FriendEditComponent } from './friends/friend-edit/friend-edit.component';
+import { FriendEditResolver } from './_resolvers/friend-edit.resolver';
 
 export const appRoutes: Routes = [
     { path: '', component: HomeComponent},
@@ -17,6 +19,7 @@ export const appRoutes: Routes = [
         children: [
             { path: 'friends', component: FriendListComponent, resolve: {users: FriendListResolver}},
             { path: 'friends/:id', component: FriendDetailComponent, resolve: {user: FriendDetailResolver}},
+            {path: 'friend/edit', component: FriendEditComponent, resolve: {user: FriendEditResolver}},
             { path: 'messages', component: MessagesComponent},
             { path: 'lists', component: ListsComponent}
         ]
