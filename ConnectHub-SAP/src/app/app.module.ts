@@ -26,6 +26,7 @@ import { FriendDetailResolver } from './_resolvers/friend-detail.resolver';
 import { FriendListResolver } from './_resolvers/friend-list.resolver';
 import { FriendEditComponent } from './friends/friend-edit/friend-edit.component';
 import { FriendEditResolver } from './_resolvers/friend-edit.resolver';
+import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes,guard';
 
 export function tokenGetter() {
    return localStorage.getItem('token');
@@ -68,7 +69,8 @@ export function tokenGetter() {
       UserService,
       FriendDetailResolver,
       FriendListResolver,
-      FriendEditResolver
+      FriendEditResolver,
+      PreventUnsavedChanges
    ],
    bootstrap: [
       AppComponent
