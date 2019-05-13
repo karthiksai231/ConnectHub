@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using ConnectHub.API.Data;
@@ -39,6 +41,24 @@ namespace ConnectHub.API.Controllers
             var userToReturn = _mapper.Map<UserForDetailedDto>(user);
 
             return Ok(userToReturn);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) {
+                return Unauthorized();
+            }
+
+            var user = await _hubRepo.GetUser(id);
+
+            _mapper.Map(userForUpdateDto, user);
+
+            if(await _hubRepo.SaveAll()) {
+                return NoContent();
+            }
+
+            throw new Exception($"Failed to update user: {id}");
         }
 
     }
