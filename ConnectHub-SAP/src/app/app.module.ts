@@ -6,6 +6,7 @@ import { BsDropdownModule, TabsModule } from 'ngx-bootstrap';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from 'ngx-gallery';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -27,6 +28,7 @@ import { FriendListResolver } from './_resolvers/friend-list.resolver';
 import { FriendEditComponent } from './friends/friend-edit/friend-edit.component';
 import { FriendEditResolver } from './_resolvers/friend-edit.resolver';
 import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes,guard';
+import { PhotoUploadComponent } from './friends/photo-upload/photo-upload.component';
 
 export function tokenGetter() {
    return localStorage.getItem('token');
@@ -43,7 +45,8 @@ export function tokenGetter() {
       MessagesComponent,
       FriendCardComponent,
       FriendDetailComponent,
-      FriendEditComponent
+      FriendEditComponent,
+      PhotoUploadComponent
    ],
    imports: [
       BrowserModule,
@@ -53,6 +56,7 @@ export function tokenGetter() {
       TabsModule.forRoot(),
       RouterModule.forRoot(appRoutes),
       NgxGalleryModule,
+      FileUploadModule,
       JwtModule.forRoot({
          config: {
             tokenGetter: tokenGetter,
