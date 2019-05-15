@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using ConnectHub.API.Data;
 using ConnectHub.API.Dtos;
 using ConnectHub.API.Models;
@@ -18,8 +19,10 @@ namespace ConnectHub.API.Controllers
     {
         private readonly IAuthRepository _authRepository;
         private readonly IConfiguration _configuration;
-        public AuthController(IAuthRepository authRepository, IConfiguration configuration)
+        private readonly IMapper _mapper;
+        public AuthController(IAuthRepository authRepository, IConfiguration configuration, IMapper mapper)
         {
+            _mapper = mapper;
             _authRepository = authRepository;
             _configuration = configuration;
         }
@@ -48,33 +51,35 @@ namespace ConnectHub.API.Controllers
         {
             var user = await _authRepository.Login(userForLoginDto.UserName.ToLower(), userForLoginDto.Password);
 
-                if (user == null)
-                {
-                    return Unauthorized();
-                }
+            if (user == null)
+            {
+                return Unauthorized();
+            }
 
-                var claims = new[]
-                {
+            var claims = new[]
+            {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName)
             };
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.Now.AddDays(1),
-                    SigningCredentials = creds
-                };
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.Now.AddDays(1),
+                SigningCredentials = creds
+            };
 
-                var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenHandler = new JwtSecurityTokenHandler();
 
-                var token = tokenHandler.CreateToken(tokenDescriptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
 
-                return Ok(new { token = tokenHandler.WriteToken(token) });
+            var userListDto = _mapper.Map<UserForListDto>(user);
+
+            return Ok(new { token = tokenHandler.WriteToken(token), userListDto });
         }
     }
 }

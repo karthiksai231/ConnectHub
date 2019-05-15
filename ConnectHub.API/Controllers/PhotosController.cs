@@ -24,7 +24,7 @@ namespace ConnectHub.API.Controllers
         private readonly IOptions<CloudinarySettings> _options;
         private Cloudinary _cloudinary;
 
-        public PhotosController(IConnectHubRepository connectHubRepo, IMapper mapper, IOptions<CloudinarySettings> options) 
+        public PhotosController(IConnectHubRepository connectHubRepo, IMapper mapper, IOptions<CloudinarySettings> options)
         {
             _connectHubRepo = connectHubRepo;
             _mapper = mapper;
@@ -40,7 +40,8 @@ namespace ConnectHub.API.Controllers
         }
 
         [HttpGet("{id}", Name = "GetPhoto")]
-        public async Task<IActionResult> GetPhoto(int id) {
+        public async Task<IActionResult> GetPhoto(int id)
+        {
             var photo = await _connectHubRepo.GetPhoto(id);
 
             var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
@@ -49,9 +50,11 @@ namespace ConnectHub.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddPhoto(int userId, [FromForm]PhotoForCreationDto photoForCreation) {
-            
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) {
+        public async Task<IActionResult> AddPhoto(int userId, [FromForm]PhotoForCreationDto photoForCreation)
+        {
+
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
                 return Unauthorized();
             }
 
@@ -61,9 +64,12 @@ namespace ConnectHub.API.Controllers
 
             var uploadResult = new ImageUploadResult();
 
-            if (file.Length > 0) {
-                using (var stream = file.OpenReadStream()) {
-                    var uploadParams = new ImageUploadParams() {
+            if (file.Length > 0)
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    var uploadParams = new ImageUploadParams()
+                    {
                         File = new FileDescription(file.Name, stream),
                         Transformation = new Transformation()
                         .Width(500)
@@ -81,37 +87,43 @@ namespace ConnectHub.API.Controllers
 
             var photo = _mapper.Map<Photo>(photoForCreation);
 
-            if (!user.Photos.Any(p => p.IsMain)) {
+            if (!user.Photos.Any(p => p.IsMain))
+            {
                 photo.IsMain = true;
             }
 
             user.Photos.Add(photo);
 
-            if (await _connectHubRepo.SaveAll()) {
+            if (await _connectHubRepo.SaveAll())
+            {
                 var photoToReturn = _mapper.Map<PhotoForReturnDto>(photo);
 
-                return CreatedAtRoute("GetPhoto", new { id = photo.Id }, photoToReturn );
+                return CreatedAtRoute("GetPhoto", new { id = photo.Id }, photoToReturn);
             }
 
             return BadRequest("Unable to Upload Photo");
         }
 
         [HttpPost("{id}/setMain")]
-        public async Task<IActionResult> SetMain(int userId, int id) {
-            
-            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) {
+        public async Task<IActionResult> SetMain(int userId, int id)
+        {
+
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
                 return Unauthorized();
             }
 
             var user = await _connectHubRepo.GetUser(userId);
 
-            if (!user.Photos.Any(p => p.Id == id)) {
+            if (!user.Photos.Any(p => p.Id == id))
+            {
                 return Unauthorized();
             }
 
             var photo = await _connectHubRepo.GetPhoto(id);
 
-            if (photo.IsMain) {
+            if (photo.IsMain)
+            {
                 return BadRequest("Is already a Main Photo");
             }
 
@@ -120,11 +132,57 @@ namespace ConnectHub.API.Controllers
 
             photo.IsMain = true;
 
-            if(await _connectHubRepo.SaveAll()) {
+            if (await _connectHubRepo.SaveAll())
+            {
                 return NoContent();
             }
 
             return BadRequest("Unable to set Main Photo");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePhoto(int userId, int id)
+        {
+
+            if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+
+            var user = await _connectHubRepo.GetUser(userId);
+
+            if (!user.Photos.Any(p => p.Id == id))
+            {
+                return Unauthorized();
+            }
+
+            var photo = await _connectHubRepo.GetPhoto(id);
+
+            if (photo.IsMain)
+            {
+                return BadRequest("Cannot delete Main Photo");
+            }
+
+            if (!string.IsNullOrWhiteSpace(photo.PublicId))
+            {
+                var deleteParams = new DeletionParams(photo.PublicId);
+
+                var destroy = _cloudinary.Destroy(deleteParams);
+
+                if (destroy.Result == "ok")
+                {
+                    _connectHubRepo.Delete(photo);
+                }
+            } else {
+                _connectHubRepo.Delete(photo);
+            }
+
+            if (await _connectHubRepo.SaveAll())
+            {
+                return Ok();
+            }
+
+            return BadRequest("Unable to Delete photo");
         }
     }
 }
