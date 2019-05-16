@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ConnectHub.API.Data;
 using ConnectHub.API.Dtos;
+using ConnectHub.API.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectHub.API.Controllers
 {
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
