@@ -33,7 +33,7 @@ namespace ConnectHub.API.Controllers
             return Ok(usersToReturn);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")]
         public async Task<IActionResult> GetUsers(int id)
         {
             var user = await _hubRepo.GetUser(id);
