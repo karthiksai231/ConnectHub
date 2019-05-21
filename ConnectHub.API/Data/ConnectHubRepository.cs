@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ConnectHub.API.Helpers;
 using ConnectHub.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,11 +33,21 @@ namespace ConnectHub.API.Data
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = await _dataContext.Users.Include(p => p.Photos).ToListAsync();
+            var users = _dataContext.Users.Include(p => p.Photos).AsQueryable();
 
-            return users;
+            users = users.Where(u => u.Id != userParams.UserId && u.Gender == userParams.Gender);
+
+            if (userParams.MinAge != 18 || userParams.MaxAge != 99) {
+                
+                var minDateOfBirth = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+                var maxDateOfBirth = DateTime.Today.AddYears(-userParams.MinAge);
+
+                users = users.Where(u => u.DateOfBirth >= minDateOfBirth && u.DateOfBirth <= maxDateOfBirth);
+            }
+
+            return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
 
         public async Task<bool> SaveAll()

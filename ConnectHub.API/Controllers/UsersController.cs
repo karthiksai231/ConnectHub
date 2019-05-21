@@ -26,17 +26,29 @@ namespace ConnectHub.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
         {
-            var users = await _hubRepo.GetUsers();
+            var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var currentUser = await _hubRepo.GetUser(currentUserId);
+
+            userParams.UserId = currentUserId;
+
+            if (string.IsNullOrWhiteSpace(userParams.Gender)) {
+                userParams.Gender = currentUser.Gender == "male" ? "female" : "male";
+            }
+
+            var users = await _hubRepo.GetUsers(userParams);
 
             var usersToReturn = _mapper.Map<IEnumerable<UserForListDto>>(users);
+
+            Response.AddPagination(users.CurrentPage, userParams.PageSize, users.TotalCount, users.TotalPages);
 
             return Ok(usersToReturn);
         }
 
         [HttpGet("{id}", Name = "GetUser")]
-        public async Task<IActionResult> GetUsers(int id)
+        public async Task<IActionResult> GetUser(int id)
         {
             var user = await _hubRepo.GetUser(id);
 
