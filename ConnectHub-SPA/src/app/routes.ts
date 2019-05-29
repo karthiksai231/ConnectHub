@@ -10,6 +10,7 @@ import { FriendListResolver } from './_resolvers/friend-list.resolver';
 import { FriendEditComponent } from './friends/friend-edit/friend-edit.component';
 import { FriendEditResolver } from './_resolvers/friend-edit.resolver';
 import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes,guard';
+import { ListsResolver } from './_resolvers/lists.resolver';
 
 export const appRoutes: Routes = [
     { path: '', component: HomeComponent},
@@ -23,7 +24,7 @@ export const appRoutes: Routes = [
             {path: 'friend/edit', component: FriendEditComponent,
                 resolve: {user: FriendEditResolver}, canDeactivate: [PreventUnsavedChanges]},
             { path: 'messages', component: MessagesComponent},
-            { path: 'lists', component: ListsComponent}
+            { path: 'lists', component: ListsComponent, resolve: {users: ListsResolver}}
         ]
     },
     { path: '**', redirectTo: 'home', pathMatch: 'full'}

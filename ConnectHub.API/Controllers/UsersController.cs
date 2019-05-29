@@ -6,6 +6,7 @@ using AutoMapper;
 using ConnectHub.API.Data;
 using ConnectHub.API.Dtos;
 using ConnectHub.API.Helpers;
+using ConnectHub.API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -73,6 +74,37 @@ namespace ConnectHub.API.Controllers
             }
 
             throw new Exception($"Failed to update user: {id}");
+        }
+
+        [HttpPost("{id}/like/{recepientId}")]
+        public async Task<IActionResult> LikeUser(int id, int recepientId)
+        {
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) {
+                return Unauthorized();
+            }
+
+            var like = await _hubRepo.GetLike(id, recepientId);
+
+            if (like != null) {
+                return BadRequest("You have already liked this user");
+            }
+
+            if (await _hubRepo.GetUser(recepientId) == null) {
+                return NotFound();
+            }
+
+            like = new Like {
+                LikerId = id,
+                LikeeId = recepientId
+            };
+
+            _hubRepo.Add<Like>(like);
+
+            if (await _hubRepo.SaveAll()) {
+                return Ok();
+            }
+
+            return BadRequest("Failed to like user");
         }
 
     }
