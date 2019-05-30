@@ -31,6 +31,8 @@ import { FriendEditResolver } from './_resolvers/friend-edit.resolver';
 import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes,guard';
 import { PhotoUploadComponent } from './friends/photo-upload/photo-upload.component';
 import { ListsResolver } from './_resolvers/lists.resolver';
+import { MessagesResolver } from './_resolvers/messages.resolver';
+import { FriendMessagesComponent } from './friends/friend-messages/friend-messages.component';
 
 export function tokenGetter() {
    return localStorage.getItem('token');
@@ -48,6 +50,7 @@ export function tokenGetter() {
       FriendCardComponent,
       FriendDetailComponent,
       FriendEditComponent,
+      FriendMessagesComponent,
       PhotoUploadComponent,
       TimeAgoPipe
    ],
@@ -82,7 +85,8 @@ export function tokenGetter() {
       FriendListResolver,
       FriendEditResolver,
       PreventUnsavedChanges,
-      ListsResolver
+      ListsResolver,
+      MessagesResolver
    ],
    bootstrap: [
       AppComponent
