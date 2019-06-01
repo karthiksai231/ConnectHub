@@ -12,7 +12,7 @@ import { Pagination, PaginatedResult } from 'src/app/_models/pagination';
 })
 export class FriendListComponent implements OnInit {
   users: User[];
-  user: User = JSON.parse(localStorage.getItem('user'));
+  user: User = JSON.parse(localStorage.getItem('userListDto'));
   genderList = [{value: 'male', display: 'Males'}, {value: 'female', display: 'Females'}];
   userParams: any = {};
   pagination: Pagination;
