@@ -137,7 +137,7 @@ namespace ConnectHub.API.Controllers
             throw new Exception("Unable to delete the message");
         }
 
-        [HttpPost("{id/read}")]
+        [HttpPost("{id}/read")]
         public async Task<IActionResult> MarkAsReadAsync(int userId, int id)
         {
             if (userId != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value)) {
