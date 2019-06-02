@@ -151,7 +151,7 @@ namespace ConnectHub.API.Data
             .Include(u => u.Recipient).ThenInclude(p => p.Photos)
             .Where(m => m.RecipientId == userId && m.RecipientDeleted == false && m.SenderId == recipientId ||
             m.RecipientId == recipientId && m.SenderId == userId && m.SenderDeleted == false)
-            .OrderByDescending(m => m.MessageSent).ToListAsync();
+            .OrderBy(m => m.MessageSent).ToListAsync();
 
             return messages;
         }
