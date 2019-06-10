@@ -17,7 +17,12 @@ export class HomeComponent implements OnInit {
     this.registerMode = true;
   }
 
-  cancelRegisterMode(registerMode: boolean){
+  chatToggle() {
+    const botDiv = document.getElementById('botDiv');
+    botDiv.style.height = botDiv.style.height === '600px' ? '38px' : '600px';
+  }
+
+  cancelRegisterMode(registerMode: boolean) {
     this.registerMode = registerMode;
   }
 
